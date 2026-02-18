@@ -75,5 +75,82 @@
     "url": "https://docs.djangoproject.com/en/stable/ref/django-admin/",
     "urlCorrect": null,
     "text": "django-admin and manage.py¶\n`django-admin` is Django's command-line utility for administrative tasks. This document outlines all it can do.\n\nIn addition, `manage.py` is automatically created in each Django project. It does the same thing as `django-admin` but also sets the `DJANGO_SETTINGS_MODULE` environment variable so that it points to your project's `settings.py` file.\n\nThe `django-admin` script should be on your system path if you installed Django via `pip`. If it's not in your path, ensure you have your virtual environment activated.\n\nGenerally, when working on a single Django project, it's easier to use `manage.py` than `django-admin`. If you need to switch between multiple Django settings files, use `django-admin` with `DJANGO_SETTINGS_MODULE` or the `--settings` command line option.\n\nThe command-line examples throughout this document use `django-admin` to be consistent, but any example can use `manage.py` or `python -m django` just as well.\n\nUsage¶\n\n```\n$ django-admin <command> [options]\n$ manage.py <command> [options]\n$ python -m django <command> [options]\n```"
+  },
+  {
+    "date": "Feb 18, 10.37 am",
+    "name": "Install Apache and mod_wsgi",
+    "url": "https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/modwsgi/",
+    "urlCorrect": null,
+    "text": "Install Apache and mod_wsgi¶\nIf you just want to experiment with Django, skip ahead to the next section; Django includes a lightweight web server you can use for testing, so you won't need to set up Apache until you're ready to deploy Django in production.\n\nIf you want to use Django on a production site, use Apache with `mod_wsgi`. `mod_wsgi` operates in one of two modes: embedded mode or daemon mode. In embedded mode, `mod_wsgi` is similar to `mod_perl` – it embeds Python within Apache and loads Python code into memory when the server starts. Code stays in memory throughout the life of an Apache process, which leads to significant performance gains over other server arrangements. In daemon mode, `mod_wsgi` spawns an independent daemon process that handles requests. The daemon process can run as a different user than the web server, possibly leading to improved security. The daemon process can be restarted without restarting the entire Apache web server, possibly making refreshing your codebase more seamless. Consult the mod_wsgi documentation to determine which mode is right for your setup. Make sure you have Apache installed with the `mod_wsgi` module activated. Django will work with any version of Apache that supports mod_wsgi.\n\nSee How to use Django with mod_wsgi for information on how to configure mod_wsgi once you have it installed.\n\nIf you can't use mod_wsgi for some reason, fear not: Django supports many other deployment options. One is `uWSGI`; it works very well with `nginx`. Additionally, Django follows the WSGI spec (`PEP 3333`), which allows it to run on a variety of server platforms."
+  },
+  {
+    "date": "Feb 18",
+    "name": "PostgreSQL Transaction Isolation",
+    "url": "https://www.postgresql.org/docs/current/transaction-iso.html",
+    "urlCorrect": null,
+    "text": "Note: explore this later.\n\n13.2. Transaction Isolation\n13.2.1. Read Committed Isolation Level\n13.2.2. Repeatable Read Isolation Level\n13.2.3. Serializable Isolation Level\n\nThe SQL standard defines four levels of transaction isolation. The most strict is `Serializable`, which is defined by the standard in a paragraph which says that any concurrent execution of a set of Serializable transactions is guaranteed to produce the same effect as running them one at a time in some order. The other three levels are defined in terms of phenomena, resulting from interaction between concurrent transactions, which must not occur at each level. The standard notes that due to the definition of Serializable, none of these phenomena are possible at that level. (This is hardly surprising – if the effect of the transactions must be consistent with having been run one at a time, how could you see any phenomena caused by interactions?)"
+  },
+  {
+    "date": "Feb 18",
+    "name": "What is Apache?",
+    "url": "https://httpd.apache.org/docs/2.4/",
+    "urlCorrect": null,
+    "text": "Apache usually refers to Apache HTTP Server (often just called \"Apache\"), which is one of the oldest and most widely used web servers in the world. A web server's job is to listen for requests from browsers (like when someone visits your site) and send back the correct web pages, files, or API responses. Apache can serve static files (HTML, images, CSS), forward dynamic requests to application servers (like Django, PHP, or Node apps), handle HTTPS encryption, logging, routing, and access control.\n\nIn a Python/Django setup, Apache is sometimes used together with a connector like `mod_wsgi` so it can run your Django application, although many modern deployments instead use `Nginx` + `Gunicorn`/`Uvicorn` because they're lighter and simpler for async workloads. Apache is extremely configurable and battle-tested, which is why it powered a huge portion of the early web and is still common in enterprise environments.\n\nImportant note: the name \"Apache\" also appears in many other big projects from the Apache Software Foundation (like Apache Spark, Apache Kafka, Apache Airflow), but if someone just says \"Apache\" in a web context, they almost always mean the Apache HTTP Server.\n\nIf you want, I can also explain in one simple diagram-style explanation:\n\n```\nBrowser → Apache/Nginx → App server → Django/FastAPI → DB\n```\n\nThat flow is something every backend engineer eventually needs to understand."
+  },
+  {
+    "date": "Feb 18",
+    "name": "Apache vs Uvicorn",
+    "url": "https://www.uvicorn.org/",
+    "urlCorrect": null,
+    "text": "Yes — **they're both servers that sit in front of your app**, but they are *not the same type* of server in practice. They live at different layers.\n\nHere's the clean way to think about it:\n\n---\n\n### 🧱 Apache = full general-purpose web server\n\nApache HTTP Server is a **complete front-facing web server**. It can:\n\n* accept internet traffic directly\n* serve static files (HTML, images, CSS)\n* terminate HTTPS\n* handle routing, compression, logging\n* optionally run apps via modules (like `mod_wsgi`)\n\nIt's designed to be the **main entry point from the internet**.\n\n---\n\n### ⚡ Uvicorn = Python application server (ASGI server)\n\nUvicorn is specifically an **ASGI application server for Python apps**.\n\nIt:\n\n* runs FastAPI / Django ASGI apps\n* understands Python async protocols\n* converts HTTP requests into ASGI calls\n\nBut it does *not* aim to be a full-featured general web server like Apache.\n\nThink of it as:\n\n> \"the engine that executes your Python web app.\"\n\n---\n\n### 🧠 Real production architecture\n\nMost modern setups look like:\n\n```\nBrowser\n   ↓\nNginx / Apache   ← front web server (TLS, static files)\n   ↓\nUvicorn / Gunicorn  ← app server\n   ↓\nDjango / FastAPI\n```\n\nSo:\n\n* Apache/Nginx = traffic manager + front door\n* Uvicorn = Python request runner\n\n---\n\n### 🎯 Simple analogy\n\n* **Apache = restaurant building + reception + security**\n* **Uvicorn = the kitchen cooking the food**\n\nBoth are part of serving customers, but they do different jobs.\n\n---\n\n### ✅ The technically correct statement\n\n✔ Both handle HTTP traffic\n✔ Both are servers\n❌ But Apache is a *web server*, while Uvicorn is an *application server*\n\n---\n\nIf you want the *real industry shortcut* senior engineers use:\n\n👉 **When do you actually need Nginx/Apache in front of Uvicorn, and when can you safely run Uvicorn alone?**\n\nThat's something beginners almost always misunderstand in deployment."
+  },
+  {
+    "date": "Feb 18",
+    "name": "How the web actually works",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP",
+    "urlCorrect": null,
+    "text": "Note: requires further study.\n\n**Absolute foundation** for understanding web servers, async vs sync, and deployment.\n\nStudy: HTTP request/response lifecycle; DNS → TCP → TLS → HTTP flow; what a browser actually sends; headers, cookies, sessions; REST vs WebSockets.\n\nIf you deeply understand:\n\n```\nBrowser → Internet → Server → Response\n```\n\n…everything else becomes easier. This is the single highest-leverage topic."
+  },
+  {
+    "date": "Feb 18",
+    "name": "Operating systems basics (for backend)",
+    "url": "https://en.wikipedia.org/wiki/Process_(computing)",
+    "urlCorrect": null,
+    "text": "Note: requires further study.\n\n**Very important, often skipped.** You don't need a full OS course, just: processes vs threads; blocking vs non-blocking I/O; scheduling; memory vs CPU usage; file descriptors / sockets.\n\nThis explains: why CPU-bound work slows servers; why async exists; why worker processes exist. Without this, async vs sync feels like magic."
+  },
+  {
+    "date": "Feb 18",
+    "name": "Networking fundamentals",
+    "url": "https://beej.us/guide/bgnet/",
+    "urlCorrect": null,
+    "text": "Note: requires further study.\n\nLearn: what a socket is; what \"listening on a port\" means; how servers accept connections; latency vs throughput; serialization / payload transfer.\n\nThis explains: why microservices add network overhead; why JSON vs Protobuf matters; why load balancers exist."
+  },
+  {
+    "date": "Feb 18",
+    "name": "Backend architecture patterns",
+    "url": "https://microservices.io/patterns/index.html",
+    "urlCorrect": null,
+    "text": "Note: requires further study.\n\n**Industry reality.** Understand: monolith vs microservices; reverse proxy vs app server; background workers & queues; horizontal vs vertical scaling; stateless vs stateful services.\n\nThis explains: Apache vs Uvicorn; Django vs FastAPI roles; why Celery exists; why Cloud Run / containers exist."
+  },
+  {
+    "date": "Feb 18",
+    "name": "Concurrency models",
+    "url": "https://docs.python.org/3/library/asyncio.html",
+    "urlCorrect": null,
+    "text": "Note: requires further study.\n\n**This unlocks everything.** Learn the difference between: synchronous execution; threading; multiprocessing; event loops; async/await.\n\nOnce you truly understand:\n\n```\nCPU-bound vs IO-bound\n```\n\n…90% of backend scaling decisions become obvious. This is the core mental model of modern backend engineering."
+  },
+  {
+    "date": "Feb 18, 11.22 am",
+    "name": "Access shell inside a Docker container",
+    "url": "https://docs.docker.com/engine/reference/commandline/exec/",
+    "urlCorrect": null,
+    "text": "`docker exec -it <container> bash` opens an **interactive Bash shell inside a running Docker container**. `docker exec` means \"run a command in this existing container\"; `-i` keeps input open and `-t` gives you a real terminal; `<container>` is the container name or ID; and `bash` is the shell you want to start. Once inside, you're effectively \"logged into\" the container and can inspect files, run programs, check logs, or manually execute things like `psql`, `python`, or migrations. It's the Docker equivalent of SSH-ing into a remote machine for debugging or manual work."
+  },
+  {
+    "date": "Feb 18, 11.23 am",
+    "name": "Connecting to a database inside a Docker container",
+    "url": "https://docs.docker.com/engine/reference/commandline/exec/",
+    "urlCorrect": null,
+    "text": "The correct way to connect to a database (e.g. Postgres) inside a running Docker container is:\n\n```\ndocker exec -it <container> psql -U <user> -d <db-name>\n```\n\nThis means: run the Postgres CLI (psql) inside the container, open an interactive terminal (-it), log in as the specified database user (-U <user>), and connect to the given database (-d <db-name>). In practice, it's the fastest way to jump straight into a specific database inside your container without first opening a shell and then connecting manually — very useful for debugging, running SQL, or inspecting tables."
   }
 ]
