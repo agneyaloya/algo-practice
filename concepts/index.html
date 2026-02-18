@@ -220,6 +220,10 @@
                 return;
               currentFilteredIndex = filteredIndex;
               renderConcept(filteredIndices[currentFilteredIndex]);
+              const originalIndex = filteredIndices[currentFilteredIndex];
+              if (location.hash !== "#" + originalIndex) {
+                location.hash = originalIndex;
+              }
             }
 
             function refreshFilter() {
@@ -238,6 +242,9 @@
                   ? filteredIndices[currentFilteredIndex]
                   : 0,
               );
+              if (filteredIndices.length > 0 && location.hash !== "#" + filteredIndices[currentFilteredIndex]) {
+                location.hash = filteredIndices[currentFilteredIndex];
+              }
             }
 
             attachTocListeners();
@@ -291,7 +298,28 @@
               searchInput.focus();
             });
 
-            renderConcept(filteredIndices[0]);
+            window.addEventListener("hashchange", () => {
+              const hash = location.hash.slice(1);
+              const parsed = parseInt(hash, 10);
+              if (isNaN(parsed) || parsed < 0 || parsed >= concepts.length) return;
+              if (filteredIndices[currentFilteredIndex] === parsed) return;
+              const pos = filteredIndices.indexOf(parsed);
+              if (pos >= 0) {
+                currentFilteredIndex = pos;
+                renderConcept(filteredIndices[currentFilteredIndex]);
+              }
+            });
+
+            const hash = location.hash.slice(1);
+            const initialIndex = parseInt(hash, 10);
+            if (!isNaN(initialIndex) && initialIndex >= 0 && initialIndex < concepts.length) {
+              const pos = filteredIndices.indexOf(initialIndex);
+              if (pos >= 0) currentFilteredIndex = pos;
+            }
+            renderConcept(filteredIndices[currentFilteredIndex]);
+            if (filteredIndices.length > 0 && location.hash !== "#" + filteredIndices[currentFilteredIndex]) {
+              location.hash = filteredIndices[currentFilteredIndex];
+            }
           })
           .catch(() => showFetchHelp());
       }

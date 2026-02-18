@@ -22,6 +22,11 @@ def concepts_json():
     return send_from_directory(BASE, "conceptsDB.json")
 
 
+@app.get("/style.css")
+def style():
+    return send_from_directory(BASE, "style.css")
+
+
 @app.patch("/api/concepts/<int:index>")
 def update_concept(index):
     data = request.get_json(force=True, silent=True) or {}
