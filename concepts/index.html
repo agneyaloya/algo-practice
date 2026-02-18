@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Concepts</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap" rel="stylesheet" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Georgia", "Times New Roman", serif;
+        line-height: 1.6;
+        margin: 0;
+        min-height: 100vh;
+        color: #1a1a1a;
+        background: #faf9f7;
+      }
+      .layout {
+        display: flex;
+        min-height: 100vh;
+      }
+      aside.toc {
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        width: 14rem;
+        flex-shrink: 0;
+        background: #fff;
+        border-right: 1px solid #e8e6e3;
+        padding: 1rem 0;
+        overflow-y: auto;
+      }
+      .toc h2 {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #64748b;
+        margin: 0 1rem 0.75rem;
+        padding-bottom: 0.35rem;
+        border-bottom: 1px solid #e8e6e3;
+      }
+      .toc a {
+        display: block;
+        padding: 0.4rem 1rem;
+        font-size: 0.9rem;
+        color: #334155;
+        text-decoration: none;
+        border-left: 3px solid transparent;
+        margin-left: 0;
+      }
+      .toc a:hover {
+        background: #f8f7f5;
+        color: #1a1a1a;
+      }
+      .toc a.active {
+        background: #eff6ff;
+        color: #2563eb;
+        border-left-color: #2563eb;
+        font-weight: 600;
+      }
+      main.content {
+        flex: 1;
+        min-width: 0;
+        padding: 2rem 2.5rem;
+        max-width: 52rem;
+      }
+      main.content h1 {
+        font-family: "Fraunces", serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #333;
+        margin: 0 0 1.5rem 0;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 0.5rem;
+      }
+      .concept {
+        background: #fff;
+        border: 1px solid #e8e6e3;
+        border-radius: 6px;
+        padding: 1.25rem 1.5rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      }
+      .concept-title {
+        font-family: "Fraunces", serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0 0 0.35rem 0;
+      }
+      .concept-title a {
+        color: #2563eb;
+        text-decoration: none;
+      }
+      .concept-title a:hover {
+        text-decoration: underline;
+      }
+      .concept-url {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-bottom: 0.25rem;
+        word-break: break-all;
+      }
+      .concept-date {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        margin-bottom: 0.75rem;
+      }
+      .concept-actions {
+        margin-bottom: 1rem;
+      }
+      .copy-btn {
+        font-size: 0.85rem;
+        padding: 0.35rem 0.65rem;
+        color: #334155;
+        background: #fff;
+        border: 1px solid #e8e6e3;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .copy-btn:hover {
+        background: #f8f7f5;
+        border-color: #c4c2be;
+      }
+      .copy-btn.copied {
+        color: #059669;
+        border-color: #059669;
+      }
+      .url-flag {
+        font-size: 0.85rem;
+        padding: 0.35rem 0.65rem;
+        margin-left: 0.5rem;
+        color: #334155;
+        background: #fff;
+        border: 1px solid #e8e6e3;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .url-flag:hover {
+        background: #f8f7f5;
+        border-color: #c4c2be;
+      }
+      .url-flag.correct.selected {
+        color: #059669;
+        border-color: #059669;
+        background: #ecfdf5;
+      }
+      .url-flag.incorrect.selected {
+        color: #dc2626;
+        border-color: #dc2626;
+        background: #fef2f2;
+      }
+      .concept-text {
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        font-size: 0.95rem;
+        color: #334155;
+        white-space: pre-wrap;
+        margin: 0;
+      }
+      .concept-text strong {
+        color: #1e293b;
+      }
+      .concept-text code {
+        font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+        font-size: 0.9em;
+        background: #f1f5f9;
+        color: #1e293b;
+        padding: 0.15em 0.4em;
+        border-radius: 4px;
+        border: 1px solid #e2e8f0;
+      }
+      .concept-text pre {
+        margin: 0.75rem 0;
+        padding: 1rem 1.25rem;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        overflow-x: auto;
+        white-space: pre;
+      }
+      .concept-text pre code {
+        padding: 0;
+        background: none;
+        border: none;
+        font-size: 0.875rem;
+      }
+      .nav-buttons {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+        gap: 1rem;
+      }
+      .nav-buttons a,
+      .nav-buttons span {
+        font-size: 0.9rem;
+        color: #2563eb;
+        text-decoration: none;
+        padding: 0.4rem 0.75rem;
+        border-radius: 4px;
+        border: 1px solid #e8e6e3;
+        background: #fff;
+      }
+      .nav-buttons a:hover {
+        background: #eff6ff;
+        border-color: #2563eb;
+      }
+      .nav-buttons span {
+        color: #94a3b8;
+        cursor: default;
+        border-color: transparent;
+        background: transparent;
+      }
+      .nav-buttons .counter {
+        color: #64748b;
+        font-size: 0.85rem;
+      }
+      .loading,
+      .error {
+        text-align: center;
+        color: #64748b;
+        padding: 2rem;
+      }
+      .error {
+        color: #b91c1c;
+      }
+      .help-box {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 6px;
+        padding: 1rem 1.25rem;
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        color: #92400e;
+        text-align: left;
+      }
+      .help-box code {
+        background: #fff;
+        padding: 0.2em 0.4em;
+        border-radius: 4px;
+        font-size: 0.85em;
+      }
+      .help-box ol {
+        margin: 0.5rem 0 0 1.25rem;
+        padding: 0;
+      }
+      .help-box li {
+        margin-bottom: 0.35rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"><span class="loading">Loading…</span></div>
+
+    <script>
+      const root = document.getElementById("root");
+
+      function showFetchHelp() {
+        root.innerHTML =
+          '<p class="error">This page couldn’t load <code>conceptsDB.json</code>.</p>' +
+          '<div class="help-box">' +
+          "<strong>How to use this page</strong><br>" +
+          "Browsers block loading local files when you open the HTML directly (file://). Serve this folder over HTTP instead:" +
+          "<ol>" +
+          "<li>Open a terminal in the folder that <em>contains</em> <code>concepts</code> (e.g. your project root).</li>" +
+          "<li>Run: <code>python3 -m http.server 8000</code></li>" +
+          '<li>In Chrome, go to: <a href="http://localhost:8000/concepts/">http://localhost:8000/concepts/</a></li>' +
+          "</ol>" +
+          "Then the page will load <code>conceptsDB.json</code> and display the concepts." +
+          "</div>";
+      }
+
+      if (window.location.protocol === "file:") {
+        showFetchHelp();
+      } else {
+        fetch("conceptsDB.json")
+          .then((res) => {
+            if (!res.ok) throw new Error("Not found");
+            return res.json();
+          })
+          .then((concepts) => {
+            if (!Array.isArray(concepts) || concepts.length === 0) {
+              root.innerHTML = '<p class="loading">No concepts found.</p>';
+              return;
+            }
+            let currentIndex = 0;
+
+            function updateUrlCorrect(index, value) {
+              concepts[index].urlCorrect = value;
+              fetch("/api/concepts/" + index, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ urlCorrect: value }),
+              }).catch(() => {});
+              renderConcept(currentIndex);
+            }
+
+            const tocHtml =
+              "<h2>Contents</h2>" +
+              concepts
+                .map(
+                  (c, i) =>
+                    `<a href="#" data-index="${i}" class="toc-link">${escapeHtml(c.name)}</a>`,
+                )
+                .join("");
+
+            const mainHtml =
+              "<h1>Concepts</h1>" +
+              '<div id="concept-view"></div>' +
+              '<div class="nav-buttons">' +
+              '<a href="#" id="prev-btn" style="visibility:hidden">← Previous</a>' +
+              '<span class="counter"><span id="current-num">1</span> / ' +
+              concepts.length +
+              "</span>" +
+              '<a href="#" id="next-btn">Next →</a>' +
+              '<a href="#" id="download-json-btn" style="margin-left:auto">Download conceptsDB.json</a>' +
+              "</div>";
+
+            root.innerHTML =
+              '<div class="layout">' +
+              '<aside class="toc">' +
+              tocHtml +
+              "</aside>" +
+              '<main class="content">' +
+              mainHtml +
+              "</main>" +
+              "</div>";
+
+            const conceptView = document.getElementById("concept-view");
+            const currentNum = document.getElementById("current-num");
+            const tocLinks = root.querySelectorAll(".toc-link");
+            const prevBtn = document.getElementById("prev-btn");
+            const nextBtn = document.getElementById("next-btn");
+
+            function renderConcept(index) {
+              const c = concepts[index];
+              conceptView.innerHTML =
+                '<article class="concept">' +
+                '<h2 class="concept-title">' +
+                '<a href="' +
+                escapeAttr(c.url) +
+                '" target="_blank" rel="noopener">' +
+                escapeHtml(c.name) +
+                "</a>" +
+                "</h2>" +
+                '<p class="concept-url">' +
+                escapeHtml(c.url) +
+                "</p>" +
+                (c.date
+                  ? '<p class="concept-date">' + escapeHtml(c.date) + "</p>"
+                  : "") +
+                '<div class="concept-actions">' +
+                '<button type="button" class="copy-btn">Copy</button>' +
+                '<button type="button" class="url-flag correct' +
+                (c.urlCorrect === true ? " selected" : "") +
+                '" title="URL is correct">✓ Correct</button>' +
+                '<button type="button" class="url-flag incorrect' +
+                (c.urlCorrect === false ? " selected" : "") +
+                '" title="URL is incorrect">✗ Incorrect</button>' +
+                "</div>" +
+                '<p class="concept-text">' +
+                formatText(c.text || "") +
+                "</p>" +
+                "</article>";
+              conceptView
+                .querySelector(".copy-btn")
+                .addEventListener("click", function () {
+                  const cur = concepts[currentIndex];
+                  const parts = [cur.name];
+                  if (cur.url) parts.push("URL: " + cur.url);
+                  if (cur.date) parts.push("Date: " + cur.date);
+                  parts.push("");
+                  parts.push(cur.text || "");
+                  const plain = parts.join("\n");
+                  navigator.clipboard.writeText(plain).then(() => {
+                    const btn = conceptView.querySelector(".copy-btn");
+                    btn.textContent = "Copied!";
+                    btn.classList.add("copied");
+                    setTimeout(() => {
+                      btn.textContent = "Copy";
+                      btn.classList.remove("copied");
+                    }, 2000);
+                  });
+                });
+              conceptView
+                .querySelector(".url-flag.correct")
+                .addEventListener("click", function () {
+                  updateUrlCorrect(currentIndex, true);
+                });
+              conceptView
+                .querySelector(".url-flag.incorrect")
+                .addEventListener("click", function () {
+                  updateUrlCorrect(currentIndex, false);
+                });
+              currentNum.textContent = index + 1;
+              tocLinks.forEach((link, i) =>
+                link.classList.toggle("active", i === index),
+              );
+              prevBtn.style.visibility = index === 0 ? "hidden" : "visible";
+              nextBtn.style.visibility =
+                index === concepts.length - 1 ? "hidden" : "visible";
+            }
+
+            function goTo(index) {
+              if (index < 0 || index >= concepts.length) return;
+              currentIndex = index;
+              renderConcept(currentIndex);
+            }
+
+            root.querySelectorAll(".toc-link").forEach((link) => {
+              link.addEventListener("click", (e) => {
+                e.preventDefault();
+                goTo(parseInt(link.dataset.index, 10));
+              });
+            });
+            prevBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              goTo(currentIndex - 1);
+            });
+            nextBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              goTo(currentIndex + 1);
+            });
+            document
+              .getElementById("download-json-btn")
+              .addEventListener("click", (e) => {
+                e.preventDefault();
+                const blob = new Blob([JSON.stringify(concepts, null, 2)], {
+                  type: "application/json",
+                });
+                const a = document.createElement("a");
+                a.href = URL.createObjectURL(blob);
+                a.download = "conceptsDB.json";
+                a.click();
+                URL.revokeObjectURL(a.href);
+              });
+
+            document.addEventListener("keydown", (e) => {
+              if (e.key === "ArrowLeft") {
+                e.preventDefault();
+                goTo(currentIndex - 1);
+              }
+              if (e.key === "ArrowRight") {
+                e.preventDefault();
+                goTo(currentIndex + 1);
+              }
+            });
+
+            renderConcept(0);
+          })
+          .catch(() => showFetchHelp());
+      }
+
+      function escapeHtml(str) {
+        const div = document.createElement("div");
+        div.textContent = str;
+        return div.innerHTML;
+      }
+      function escapeAttr(str) {
+        return escapeHtml(str).replace(/"/g, "&quot;");
+      }
+      function formatText(str) {
+        const escaped = escapeHtml(str);
+        const withBlocks = escaped.replace(/```\n?([\s\S]*?)```/g, function (_, code) {
+          return "<pre><code>" + code + "</code></pre>";
+        });
+        const withInlineCode = withBlocks.replace(/`([^`]+)`/g, "<code>$1</code>");
+        return withInlineCode.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+      }
+    </script>
+  </body>
+</html>
